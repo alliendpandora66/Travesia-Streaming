@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.ico') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subir Videos</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="{{ url_for('show_videos') }}">Inicio</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('upload') }}">Subir Videos</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <h1 class="text-center">Subir Videos</h1>
+  <form id="upload-form" method="post" enctype="multipart/form-data" action="{{ url_for('upload') }}">
+    <div class="form-group">
+        <label for="file">Seleccionar archivo (solo .mp4):</label>
+        <input type="file" class="form-control-file" id="file" name="file" accept=".mp4" required>
+    </div>
+    <div class="form-group">
+        <label for="title">Título:</label>
+        <input type="text" class="form-control" id="title" name="title" required>
+    </div>
+    <div class="form-group">
+        <label for="description">Descripción:</label>
+        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="progress">Progreso de subida:</label>
+        <progress id="progress" value="0" max="100"></progress>
+        <p id="progress-label"></p>
+    </div>
+    <button id="submit-button" type="submit" class="btn btn-primary">Subir</button>
+</form>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Script para actualizar el progreso de la subida -->
+<script>
+    const fileInput = document.getElementById('file');
+    const progress = document.getElementById('progress');
+    const progressLabel = document.getElementById('progress-label');
+    const uploadForm = document.getElementById('upload-form');
+    const submitButton = document.getElementById('submit-button');
+
+    submitButton.addEventListener('click', (event) => {
+        event.preventDefault(); // Evitar el envío del formulario automáticamente
+        const file = fileInput.files[0];
+        const fileSizeMb = file.size / (1024 * 1024); // Convertir el tamaño del archivo a MB
+        const updateProgress = (event) => {
+            const uploadedBytes = event.loaded;
+            const uploadedMb = uploadedBytes / (1024 * 1024); // Convertir los bytes subidos a MB
+            const progressPercentage = (uploadedBytes / event.total) * 100;
+            progress.value = progressPercentage;
+            progressLabel.textContent = `${uploadedMb.toFixed(1)} MB / ${fileSizeMb.toFixed(1)} MB`; // Mostrar el progreso en MB
+        };
+        const xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener('progress', updateProgress);
+        xhr.open('POST', '{{ url_for("upload") }}');
+        xhr.send(new FormData(uploadForm));
+    });
+</script>
+
+</body>
+</html>

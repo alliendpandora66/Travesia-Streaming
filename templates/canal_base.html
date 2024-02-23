@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Google Ads JavaScript -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6640821043888760" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/videos">Travesia | Videos y mas</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4 offset-md-4 text-center">
+                {% if user.profile_image %}
+                    <img src="{{ url_for('static', filename=user.profile_image) }}" alt="Profile Image" class="img-fluid rounded-circle mb-3" style="width: 200px; height: 200px;">
+                {% else %}
+                    <img src="{{ url_for('static', filename='media/perfil.png') }}" alt="Default Profile Image" class="img-fluid rounded-circle mb-3" style="width: 200px; height: 200px;">
+                {% endif %}
+                <h3>{{ user.username }}</h3>
+                <p>{{ number_of_subscribers }} Suscriptores</p>
+                {% if current_user.is_subscribed(user) %}
+                    <form action="{{ url_for('unsubscribe', username=user.username) }}" method="post">
+                        <button type="submit" class="btn btn-danger">Desuscribirse</button>
+                    </form>
+                {% else %}
+                    <form action="{{ url_for('subscribe', username=user.username) }}" method="post">
+                        <button type="submit" class="btn btn-primary">Subscribirse</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+        <!-- Contenido donde quieres mostrar el anuncio -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- Aquí va el anuncio de Google Ads -->
+                    <ins class="adsbygoogle"
+                        style="display:block"
+                        data-ad-format="autorelaxed"
+                        data-ad-client="ca-pub-6640821043888760"
+                        data-ad-slot="5923942144"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-md-8 offset-md-2">
+                <h4>Videos Subidos</h4>
+                {% for upload in user.uploads %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ upload.title }}</h5>
+                            <video width="320" height="240" controls>
+                                <source src="{{ url_for('uploaded_file', filename=secure_filename(upload.filename)) }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

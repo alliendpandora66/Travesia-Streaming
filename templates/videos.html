@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videos Disponibles</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Travesia | Videos y mas</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+      
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Inicio</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/upload">Publicar Video</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/base1">Canal</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" action="{{ url_for('buscar', query='') }}" method="GET">
+            <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Buscar" name="query">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+        </form>        
+        <form class="form-inline my-2 my-lg-0" action="{{ url_for('logout') }}" method="post">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
+        </form>        
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h1 class="text-center">Videos Disponibles</h1>
+    <div class="row mt-5">
+        {% for video_info in videos_info %}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <video class="embed-responsive-item plyr" controls preload="metadata">
+                        <source src="{{ url_for('uploaded_file', filename=video_info.filename) }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ video_info.title }}</h5>
+                    <p class="card-text">{{ video_info.description }}</p>
+                    <!-- Agregar enlace al video -->
+                    <a href="{{ url_for('watch_video', video_filename=video_info.filename.split('.')[0]) }}" class="btn btn-primary">Ver video</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Mostrar resultados de la búsqueda de canales solo si hay resultados -->
+    {% if canales %}
+    <h2 class="mt-5">Resultados de la búsqueda</h2>
+    <div class="row mt-3">
+        {% for usuario in canales %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ usuario.username }}</h5>
+                        <p class="card-text">Subscriptores: {{ usuario.subscribers }}</p>
+                        <!-- Agregar enlace al canal -->
+                        <a href="{{ url_for('canal', username=usuario.username) }}" class="btn btn-primary">Visitar canal</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.plyr.io/3.6.4/plyr.polyfilled.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
